@@ -1,0 +1,119 @@
+function edgeDetection
+%分别用robert sobel prewitt log以及canny算子对test 1-6进行边缘检测
+i1=imread('test1.tif');
+i1=i1(:,:,1);
+i2=imread('test2.png');
+i3=imread('test3.jpg');
+i4=imread('test4.bmp');
+i5=imread('test5.png');
+i6=imread('test6.jpg');
+%=====roberts============================
+i1r=edge(i1,'roberts'); %指定敏感度阈值为0.16 可改变
+i2r=edge(i2,'roberts');
+i3r=edge(i3,'roberts');
+i4r=edge(i4,'roberts');
+i5r=edge(i5,'roberts');
+i6r=edge(i6,'roberts');
+%=====sobel================================
+i1s=edge(i1,'Sobel');
+i2s=edge(i2,'Sobel');
+i3s=edge(i3,'Sobel');
+i4s=edge(i4,'Sobel');
+i5s=edge(i5,'Sobel');
+i6s=edge(i6,'Sobel');
+%====prewitt===============================
+i1p=edge(i1,'Prewitt');
+i2p=edge(i2,'Prewitt');
+i3p=edge(i3,'Prewitt');
+i4p=edge(i4,'Prewitt');
+i5p=edge(i5,'Prewitt');
+i6p=edge(i6,'Prewitt');
+%====log===================================
+i1l=edge(i1,'LOG');
+i2l=edge(i2,'LOG');
+i3l=edge(i3,'LOG');
+i4l=edge(i4,'LOG');
+i5l=edge(i5,'LOG');
+i6l=edge(i6,'LOG');
+%===canny================================
+i1c=edge(i1,'Canny');
+i2c=edge(i2,'Canny');
+i3c=edge(i3,'Canny');
+i4c=edge(i4,'Canny');
+i5c=edge(i5,'Canny');
+i6c=edge(i6,'Canny');
+
+%====figure===========================
+figure(1)
+subplot(2,3,1);imshow(i1);title('test 1 原图');
+subplot(2,3,2);imshow(i1r);title('robert算子');
+subplot(2,3,3);imshow(i1s);title('sobel算子');
+subplot(2,3,4);imshow(i1p);title('prewitt算子');
+subplot(2,3,5);imshow(i1l);title('LOG算子');
+subplot(2,3,6);imshow(i1c);title('canny算子');
+figure(2)
+subplot(2,3,1);imshow(i2);title('test 2 原图');
+subplot(2,3,2);imshow(i2r);title('robert算子');
+subplot(2,3,3);imshow(i2s);title('sobel算子');
+subplot(2,3,4);imshow(i2p);title('prewitt算子');
+subplot(2,3,5);imshow(i2l);title('LOG算子');
+subplot(2,3,6);imshow(i2c);title('canny算子');
+figure(3)
+subplot(2,3,1);imshow(i3);title('test 3 原图');
+subplot(2,3,2);imshow(i3r);title('robert算子');
+subplot(2,3,3);imshow(i3s);title('sobel算子');
+subplot(2,3,4);imshow(i3p);title('prewitt算子');
+subplot(2,3,5);imshow(i3l);title('LOG算子');
+subplot(2,3,6);imshow(i3c);title('canny算子');
+figure(4)
+subplot(2,3,1);imshow(i4);title('test 4 原图');
+subplot(2,3,2);imshow(i4r);title('robert算子');
+subplot(2,3,3);imshow(i4s);title('sobel算子');
+subplot(2,3,4);imshow(i4p);title('prewitt算子');
+subplot(2,3,5);imshow(i4l);title('LOG算子');
+subplot(2,3,6);imshow(i4c);title('canny算子');
+figure(5)
+subplot(2,3,1);imshow(i5);title('test 5 原图');
+subplot(2,3,2);imshow(i5r);title('robert算子');
+subplot(2,3,3);imshow(i5s);title('sobel算子');
+subplot(2,3,4);imshow(i5p);title('prewitt算子');
+subplot(2,3,5);imshow(i5l);title('LOG算子');
+subplot(2,3,6);imshow(i5c);title('canny算子');
+figure(6)
+subplot(2,3,1);imshow(i6);title('test 6 原图');
+subplot(2,3,2);imshow(i6r);title('robert算子');
+subplot(2,3,3);imshow(i6s);title('sobel算子');
+subplot(2,3,4);imshow(i6p);title('prewitt算子');
+subplot(2,3,5);imshow(i6l);title('LOG算子');
+subplot(2,3,6);imshow(i6c);title('canny算子');
+end
+
+
+function hough1(path,way,num)
+I=imread(path);
+A=I(:,:,1);
+BW = edge(A,way);%边缘检测，返回二值图像
+[H,T,R] = hough(BW);%计算二值图像的标准霍夫变换，H为霍夫变换矩阵，T,R为计算霍夫变换的角度和半径值
+P = houghpeaks(H,num);%提取n个极值点
+x = T(P(:,2));
+y = R(P(:,1));
+lines=houghlines(BW,T,R,P);%提取线段
+
+figure(1);
+subplot(1,3,1);imshow(A);title('原图');
+subplot(1,3,2);imshow(H,[],'XData',T,'YData',R,'InitialMagnification','fit');title('hough变换的图像');
+xlabel('\theta'), ylabel('\rho');
+axis on,axis square,hold on;
+plot(x,y,'s','color','red');%标出极值点
+
+subplot(1,3,3);
+imshow(A),hold on;title([way,'极值点个数=',num2str(num)]),hold on;
+for k = 1:length(lines)
+    xy = [lines(k).point1; lines(k).point2];
+    plot(xy(:,1),xy(:,2),'LineWidth',1,'Color','red');%画出线段
+    plot(xy(1,1),xy(1,2),'.','LineWidth',1,'Color','yellow');%起点
+    plot(xy(2,1),xy(2,2),'.','LineWidth',1,'Color','yellow');%终点
+end
+end
+
+
